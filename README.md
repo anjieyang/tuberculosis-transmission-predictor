@@ -32,19 +32,19 @@
 
 PDF files which are Nunavut building number maps provided by Gonzalo. There are 25 PDF maps in total. Currently 16 of them have valid building numbers. 
 
-![img](file:////Users/anjieyang/Library/Group%20Containers/UBF8T346G9.Office/TemporaryItems/msohtmlclip/clip_image002.jpg)
+![building_number_maps](./resources/building_number_maps.png)
 
 #### /semi_data_geo coordinate
 
 .xls files that are generated from **all_map_parser.py** and used to obtain geographic coordinates by **find_geo_coordinates.py**. In addition to geographical coordinates, other information, including color, prefix, suffix, whether from a range and category, is also stored under this directory.
 
-![img](file:////Users/anjieyang/Library/Group%20Containers/UBF8T346G9.Office/TemporaryItems/msohtmlclip/clip_image004.jpg)
+![img](./resources/semi_data_geo.png)
 
 #### /pivot points
 
 .txt files that contain 2~4 pivot points that help find geographic coordinates in each hamlet. Each pivot point contains both its relative coordinates in the PDF map and its geographical coordinates(Longitude and Latitude). They are manually selected from Google Maps. Used in **find_geo_coordinates.py**
 
-**![img](file:////Users/anjieyang/Library/Group%20Containers/UBF8T346G9.Office/TemporaryItems/msohtmlclip/clip_image006.jpg)**
+**![img](./resources/pivot_points.png)**
 
 #### /geo coordinates
 
@@ -54,7 +54,7 @@ PDF files which are Nunavut building number maps provided by Gonzalo. There are 
 
 .xml and .xls files generated from **clustering_SOM.py**. .xml files are the ways a hamlet is divided into clusters by SOM(Self Organizing Maps) algorithm. .xls files are matrices that are used to evaluate the clustering results. Also contains PDF files, which are visualized clustering results by **map_coloring.py**.
 
-![img](file:////Users/anjieyang/Library/Group%20Containers/UBF8T346G9.Office/TemporaryItems/msohtmlclip/clip_image008.jpg)
+![img](./resources/SOM.png)
 
 #### /division_k_means
 
@@ -62,7 +62,7 @@ PDF files which are Nunavut building number maps provided by Gonzalo. There are 
 
  
 
-![img](file:////Users/anjieyang/Library/Group%20Containers/UBF8T346G9.Office/TemporaryItems/msohtmlclip/clip_image010.jpg)
+![img](./resources/k_means.png)
 
  
 
@@ -80,7 +80,7 @@ Common modules used in other files. It includes the **Building_Number class**, w
 
 constants used in other files. It includes:
 
-![img](file:////Users/anjieyang/Library/Group%20Containers/UBF8T346G9.Office/TemporaryItems/msohtmlclip/clip_image012.jpg)
+![img](./resources/py_constants.png)
 
 **PDF_PATH** : the path of Gonzalo’s pdf maps
 
@@ -98,7 +98,7 @@ This program parses maps in **/Building_Number_Maps_2021 Gonzalo**, and extracts
 
 This program mainly focuses on assembling individual chars in those PDF maps into continuous strings that may contain building numbers. Although there is a method in [pdfplumber](https://pypi.org/project/pdfplumber/) package that can obtain all strings in a PDF file, it is quite time consuming and inefficient, because this method deals with many irrelevant information in a PDF file. 
 
-The basic algorithm of this program has something to do with Current Transformation Matrices, which tell the rotations of PDF chars. Chars in the same string should have the same rotation. ![img](file:////Users/anjieyang/Library/Group%20Containers/UBF8T346G9.Office/TemporaryItems/msohtmlclip/clip_image014.jpg)
+The basic algorithm of this program has something to do with Current Transformation Matrices, which tell the rotations of PDF chars. Chars in the same string should have the same rotation. ![img](./resources/py_all_map_parser.png)
 
  
 
@@ -142,6 +142,6 @@ This program visualizes clustering results. It colors buildings of the same clus
 
 ### Flow Chart of the project
 
-![img](file:////Users/anjieyang/Library/Group%20Containers/UBF8T346G9.Office/TemporaryItems/msohtmlclip/clip_image016.jpg)
+![img](./resources/flow_chart.png)
 
  
