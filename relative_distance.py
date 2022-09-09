@@ -5,7 +5,7 @@ import xlrd
 
 def xls_to_xlsx(xls_path):
     """
-    This function takes the path of a .xls file and save the same-content .xlsx file into
+    This function takes the path of the original .xls file and save the same-content .xlsx file to
     the same directory.
     :param xls_path: The path of original .xls file.
     """
@@ -32,6 +32,7 @@ def xls_to_xlsx(xls_path):
 PATH = "geo coordinates/"
 FILE = "Arviat"
 if __name__ == "__main__":
+    # Check if there is a valid .xlsx file and open it
     try:
         book = load_workbook(PATH + FILE + ".xlsx")
     except FileNotFoundError:
@@ -40,6 +41,7 @@ if __name__ == "__main__":
 
     buildings = read_data_from_xls(PATH + FILE + ".xls")
 
+    # Add new sheet to store the relative distance between two buildings
     try:
         sheet = book["relative_distances"]
     except KeyError:
@@ -72,5 +74,5 @@ if __name__ == "__main__":
             print("Processing Progress: {} / {} --> {}%\n".format(processed, process_times,
                                                                   int(processed / process_times * 100)))
 
-        # Avoid losing all processed data
+        # Save the file periodically to void losing all processed data
         book.save(PATH + FILE + ".xlsx")
