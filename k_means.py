@@ -68,6 +68,11 @@ class k_means:
         return center_lst_new
 
     def init_centers(building_lst, k):
+        """
+        This function is used to initialize k cluster centers.
+        :param k: The number of cluster centers need to be initialized.
+        :return: The sorted list of buildings that are selected to be cluster centers.
+        """
         centers_index = np.random.choice(len(building_lst), k, replace=False)
         # center_lst = [building_lst[i] for i in centers_index]
 
@@ -78,7 +83,6 @@ class k_means:
 
         # Sort the center list by geo position
         center_lst = sorted(center_lst.items(), key=lambda kv: (kv[1], kv[0]))
-
         center_lst = [i[0] for i in center_lst]
 
         # return list(center_lst.keys())

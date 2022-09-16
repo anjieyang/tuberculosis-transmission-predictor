@@ -66,6 +66,12 @@ def get_Clusters_hierarchical(read_path, map, k=CENTERS_NUM):
 
 
 def is_similar(color, recent_colors):
+    """
+    This function is used to check if there are similar colors in the last 5 used colors.
+    :param color: New color in the list of RGB value.
+    :param recent_colors: The list of last 5 used colors.
+    :return: There are similar colors or not.
+    """
     for recent_color in recent_colors:
         diff = math.sqrt(
             (recent_color[0] - color[0]) ** 2 + (recent_color[1] - color[1]) ** 2 + (recent_color[2] - color[2]) ** 2)
