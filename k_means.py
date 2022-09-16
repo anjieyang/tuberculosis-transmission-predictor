@@ -4,7 +4,7 @@ import common_modules as cm
 import matplotlib.pyplot as plt
 
 # hyper-parameters
-READ_PATH = "Geo_coordinates"
+READ_PATH = "geo coordinates"
 WRITE_PATH = "Clustering"
 # MAPS = os.listdir(READ_PATH)
 MAP = "Arctic_Bay.xls"
@@ -69,9 +69,20 @@ class k_means:
 
     def init_centers(building_lst, k):
         centers_index = np.random.choice(len(building_lst), k, replace=False)
-        center_lst = [building_lst[i] for i in centers_index]
-        return center_lst
+        # center_lst = [building_lst[i] for i in centers_index]
 
+        center_lst = {}
+        for i in centers_index:
+            center = building_lst[i]
+            center_lst[center] = center.get_longitude() + center.get_latitude()
+
+        # Sort the center list by geo position
+        center_lst = sorted(center_lst.items(), key=lambda kv: (kv[1], kv[0]))
+
+        center_lst = [i[0] for i in center_lst]
+
+        # return list(center_lst.keys())
+        return center_lst
 
 def clustering(read_path, map, k=CENTERS_NUM, iteration=MAX_ITERATION):
     building_lst = cm.get_data(read_path, map)

@@ -55,6 +55,12 @@ class Building:
     def xstr(s):
         return '' if s is None or s == 'None' else str(s)
 
+    def get_longitude(self):
+        return self.longitude
+
+    def get_latitude(self):
+        return self.latitude
+
 
 def get_data(read_path, map_name):
     '''
