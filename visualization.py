@@ -15,7 +15,7 @@ PDF_NAME = "Arctic_Bay_Building_No_2021_Wall.pdf"
 WRITE_PATH = "Clustering"
 # MAPS = os.listdir(READ_PATH)
 MAP = "Arctic_Bay.xls"
-CENTERS_NUM = 20
+CENTERS_NUM = 30
 
 
 class Cluster:
@@ -72,17 +72,26 @@ def is_similar(color, recent_colors):
     :param recent_colors: The list of last 5 used colors.
     :return: There are similar colors or not.
     """
+
+    # To avoid picking too bright color
+    if color[0] > 0.99 or color[1] > 0.99 or color[2] > 0.99:
+        return True
+
+    # To avoid picking too dark color
+    if color[0] < 0.01 or color[1] < 0.01 or color[2] < 0.01:
+        return True
+
     for recent_color in recent_colors:
         diff = math.sqrt(
             (recent_color[0] - color[0]) ** 2 + (recent_color[1] - color[1]) ** 2 + (recent_color[2] - color[2]) ** 2)
-        if diff < 0.6:
+        if diff < 0.5:
             return True
     return False
 
 
 if __name__ == "__main__":
     # COLORS = colors.COLORS
-    cluster_colors = colors._get_colors(10)
+    # cluster_colors = colors._get_colors(10)
     clusters_lst = get_Clusters_kmean(READ_PATH, MAP, k=CENTERS_NUM)
 
     # colors_index = np.random.choice(22, CENTERS_NUM, replace=False)
@@ -99,7 +108,7 @@ if __name__ == "__main__":
         # g = random.random()
         # b = random.random()
         color = [random.random(), random.random(), random.random()]
-        if len(recent_colors) == 5:
+        if len(recent_colors) == 10:
             recent_colors.pop(0)
         while is_similar(color, recent_colors):
             color = [random.random(), random.random(), random.random()]
