@@ -79,7 +79,7 @@ class k_means:
         center_lst = {}
         for i in centers_index:
             center = building_lst[i]
-            center_lst[center] = center.get_longitude() + center.get_latitude()
+            center_lst[center] = center.get_longitude() / center.get_latitude()
 
         # Sort the center list by geo position
         center_lst = sorted(center_lst.items(), key=lambda kv: (kv[1], kv[0]))

@@ -11,11 +11,11 @@ from queue import *
 # hyper-parameters
 READ_PATH = "geo coordinates"
 PDF_PATH = "Clustering"
-PDF_NAME = "Arctic_Bay_Building_No_2021_Wall.pdf"
+PDF_NAME = "Iqaluit_Building_No_2021_Wall.pdf"
 WRITE_PATH = "Clustering"
 # MAPS = os.listdir(READ_PATH)
-MAP = "Arctic_Bay.xls"
-CENTERS_NUM = 30
+MAP = "Iqaluit.xls"
+CENTERS_NUM = 70
 
 
 class Cluster:
@@ -84,7 +84,7 @@ def is_similar(color, recent_colors):
     for recent_color in recent_colors:
         diff = math.sqrt(
             (recent_color[0] - color[0]) ** 2 + (recent_color[1] - color[1]) ** 2 + (recent_color[2] - color[2]) ** 2)
-        if diff < 0.5:
+        if diff < 0.7:
             return True
     return False
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         # g = random.random()
         # b = random.random()
         color = [random.random(), random.random(), random.random()]
-        if len(recent_colors) == 10:
+        if len(recent_colors) == 5:
             recent_colors.pop(0)
         while is_similar(color, recent_colors):
             color = [random.random(), random.random(), random.random()]
