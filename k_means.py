@@ -2,12 +2,13 @@ import numpy as np
 import random
 import common_modules as cm
 import matplotlib.pyplot as plt
+from math import sqrt
 
 # hyper-parameters
 READ_PATH = "geo coordinates"
 WRITE_PATH = "Clustering"
 # MAPS = os.listdir(READ_PATH)
-MAP = "Arctic_Bay.xls"
+MAP = "Iqaluit.xls"
 CENTERS_NUM = 30
 MAX_ITERATION = 100
 
@@ -74,26 +75,46 @@ class k_means:
         :return: The sorted list of buildings that are selected to be cluster centers.
         """
         centers_index = np.random.choice(len(building_lst), k, replace=False)
-        # center_lst = [building_lst[i] for i in centers_index]
+        center_lst = [building_lst[i] for i in centers_index]
 
-        center_lst = {}
-        for i in centers_index:
-            center = building_lst[i]
-            center_lst[center] = center.get_longitude() / center.get_latitude()
+        # angular_lst = {}
+        # adjacency_list = {}
+        # for i in centers_index:
+        #     center = building_lst[i]
+        #     # center_lst[center] = center.get_longitude() / center.get_latitude()
+        #     # center_lst[center] = center.get_longitude() / center.get_latitude()
+        #     # angular = int(center.get_longitude() / center.get_latitude() * 50000)
+        #     # if angular not in angular_lst:
+        #     #     angular_lst[angular] = []
+        #     # angular_lst[angular].append(center)
+        #
+        #     if center not in adjacency_list:
+        #         adjacency_list[center] = []
+        #     for other_center in adjacency_list.keys():
+        #         if other_center == center:
+        #             continue
+        #         relative_distance = sqrt((other_center.get_x() - center.get_x())**2 + (other_center.get_y() - center.get_y())**2)
+        #         if relative_distance < 400:
+        #             adjacency_list[center].append(other_center)
+        #             adjacency_list[other_center].append(center)
+                # adjacency_list[center].append(relative_distance)
 
-        # Sort the center list by geo position
-        center_lst = sorted(center_lst.items(), key=lambda kv: (kv[1], kv[0]))
+        # Sort the center list by angular
+        # center_lst = sorted(center_lst.items(), key=lambda kv: (kv[1], kv[0]))
         # center_lst = dict(sorted(center_lst.items(), key=lambda item: item[1]))
         # center_lst = [i[0] for i in center_lst]
-        print(center_lst)
+        # print(angular_lst.values())
 
-        return list(i[0] for i in center_lst)
+        # return list(i[0] for i in angular_lst)
         # return list(center_lst.keys())
+        # return adjacency_list
+        return center_lst
 
 
 def clustering(read_path, map, k=CENTERS_NUM, iteration=MAX_ITERATION):
     building_lst = cm.get_data(read_path, map)
     centers_new = k_means.init_centers(building_lst, k)
+    # centers_new = list(centers_dict.keys())
     clustering_kmeans = k_means(building_lst=building_lst, center_lst=centers_new, k=k)
     ## without find_nearest_centers()
     # for iter in range(iteration):

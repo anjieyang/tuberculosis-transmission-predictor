@@ -1,4 +1,4 @@
-from distutils.command.build import build
+# from distutils.command.build import build
 import numpy as np
 import pandas as pd
 import math
@@ -61,6 +61,12 @@ class Building:
     def get_latitude(self):
         return self.latitude
 
+    def get_x(self):
+        return self.x
+
+    def get_y(self):
+        return self.y
+
 
 def get_data(read_path, map_name):
     '''
@@ -106,6 +112,21 @@ def dist_matrix(building_lst):
             dist_matrix[i][j] = Building.Euclidean_dist(building_lst[i], building_lst[j])
     return dist_matrix
 
+
+# def find_adjacency(cluster_centers):
+#     adjacency_list = {}
+#     for center in cluster_centers:
+#         if center not in adjacency_list:
+#             adjacency_list[center] = []
+#         for other_center in adjacency_list.keys():
+#             if other_center == center:
+#                 continue
+#             relative_distance = math.sqrt(
+#                 (other_center.get_x() - center.get_x()) ** 2 + (other_center.get_y() - center.get_y()) ** 2)
+#             if relative_distance < 400:
+#                 adjacency_list[center].append(other_center)
+#                 adjacency_list[other_center].append(center)
+#     return adjacency_list
 
 ## testing
 READ_PATH = "Geo_coordinates"
