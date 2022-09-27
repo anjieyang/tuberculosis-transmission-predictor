@@ -24,6 +24,7 @@ class Cluster:
         self.cluster_size = len(buildings_lst)
         self.center = center
 
+    # TODO:
     def coloring(self, annotator, color, size):
         for building in self.buildings_lst:
             x = building.x
@@ -47,6 +48,14 @@ class Cluster:
 
     def get_center(self):
         return self.center
+
+    def get_cluster_id(self):
+        '''
+        this functiion returns the cluster id of the current building
+        :param building:
+        :return:
+        '''
+        return self.cluster_id
 
 
 def get_Clusters_kmean(read_path, map, k=CENTERS_NUM):
@@ -169,8 +178,7 @@ if __name__ == "__main__":
     picked_color[0] = 1
     dfs_coloring(1)
 
-    print()
-    print("Picked Color:")
+    print("\nPicked Color:")
     print(picked_color)
 
     annotator = PdfAnnotator(PDF_PATH + '/' + PDF_NAME)
