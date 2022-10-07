@@ -12,10 +12,10 @@ from queue import *
 
 READ_PATH = "geo coordinates"
 PDF_PATH = "Clustering"
-PDF_NAME = "Arviat_Building_No_2021_Wall.pdf"
 WRITE_PATH = "Clustering"
-# MAPS = os.listdir(READ_PATH)
-MAP = "Arviat.xls"
+PDF_FILE = "Arctic_Bay_Building_No_2021_Wall.pdf"
+MAP_NAME = PDF_FILE.split("_Building")[0]
+MAP = MAP_NAME + ".xls"
 
 
 # CENTERS_NUM = 30
@@ -162,20 +162,20 @@ if __name__ == "__main__":
     # Create different directories to store the data of different granularity
     for k in cluster_number:
         try:
-            shutil.copy(PDF_PATH + '/' + PDF_NAME, PDF_PATH + '/' + PDF_NAME.split('.')[0] + f'/k_{k}/')
+            shutil.copy(PDF_PATH + '/' + PDF_FILE, PDF_PATH + '/' + MAP_NAME + f'/k_{k}/')
         except:
-            os.makedirs(PDF_PATH + '/' + PDF_NAME.split('.')[0] + '/' + f'k_{k}/')
-            shutil.copy(PDF_PATH + '/' + PDF_NAME, PDF_PATH + '/' + PDF_NAME.split('.')[0] + f'/k_{k}/')
+            os.makedirs(PDF_PATH + '/' + MAP_NAME + '/' + f'k_{k}/')
+            shutil.copy(PDF_PATH + '/' + PDF_FILE, PDF_PATH + '/' + MAP_NAME + f'/k_{k}/')
 
         clusters_lst = get_clusters_kmeans(READ_PATH, MAP, k=k)
         adjancencies = find_adjancency(clusters_lst, k)
 
         try:
-            os.remove(PDF_PATH + '/' + PDF_NAME.split('.')[0] + f'/k_{k}/cluster_data.xlsx')
+            os.remove(f'{PDF_PATH}/{MAP_NAME}/k_{k}/cluster_data.xlsx')
         except:
             pass
 
-        workbook = xlsxwriter.Workbook(PDF_PATH + '/' + PDF_NAME.split('.')[0] + f'/k_{k}/cluster_data.xlsx')
+        workbook = xlsxwriter.Workbook(f'{PDF_PATH}/{MAP_NAME}/k_{k}/cluster_data.xlsx')
         save_data(clusters_lst, workbook)
         workbook.close()
 
@@ -191,11 +191,11 @@ if __name__ == "__main__":
         print(picked_color)
 
         # annotator = PdfAnnotator(PDF_PATH + '/' + PDF_NAME)
-        annotator = PdfAnnotator(PDF_PATH + '/' + PDF_NAME.split('.')[0] + f'/k_{k}/{PDF_NAME}')
+        annotator = PdfAnnotator(f'{PDF_PATH}/{MAP_NAME}/k_{k}/{PDF_FILE}')
         for i in range(len(picked_color)):
             color = colors.COLORS[picked_color[i] % 7]
             r, g, b = color[0] / 255, color[1] / 255, color[2] / 255
             clusters_lst[i].coloring(annotator, (r, g, b, 1),
                                      size=10)
             print("Coloring cluster {} using color(r, g, b): {} {} {}".format(str(i), str(r), str(g), str(b)))
-            annotator.write(WRITE_PATH + "/" + PDF_NAME.split('.')[0] + f"/k_{k}/{PDF_NAME}")
+            annotator.write(f"{WRITE_PATH}/{MAP_NAME}/k_{k}/{PDF_FILE}")
