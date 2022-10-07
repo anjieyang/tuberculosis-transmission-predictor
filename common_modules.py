@@ -42,6 +42,9 @@ class Building:
         return Building(building_num=None, x=self.x * value, y=self.y * value, longitude=self.longitude * value,
                         latitude=self.latitude * value)
 
+    def get_building_num(self):
+        return self.building_num
+
     # def __truediv__ (self, value):
     #     return Building(building_num=None, x=self.x/value, y=self.y/value, longitude=self.longitude/value, latitude=self.latitude/value)
 
@@ -112,21 +115,6 @@ def dist_matrix(building_lst):
             dist_matrix[i][j] = Building.Euclidean_dist(building_lst[i], building_lst[j])
     return dist_matrix
 
-
-# def find_adjacency(cluster_centers):
-#     adjacency_list = {}
-#     for center in cluster_centers:
-#         if center not in adjacency_list:
-#             adjacency_list[center] = []
-#         for other_center in adjacency_list.keys():
-#             if other_center == center:
-#                 continue
-#             relative_distance = math.sqrt(
-#                 (other_center.get_x() - center.get_x()) ** 2 + (other_center.get_y() - center.get_y()) ** 2)
-#             if relative_distance < 400:
-#                 adjacency_list[center].append(other_center)
-#                 adjacency_list[other_center].append(center)
-#     return adjacency_list
 
 ## testing
 READ_PATH = "Geo_coordinates"

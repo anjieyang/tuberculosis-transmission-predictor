@@ -3,13 +3,15 @@ import random
 import common_modules as cm
 import matplotlib.pyplot as plt
 from math import sqrt
+from kneed import KneeLocator
+import matplotlib.pyplot as plt
 
 # hyper-parameters
 READ_PATH = "geo coordinates"
 WRITE_PATH = "Clustering"
 # MAPS = os.listdir(READ_PATH)
 MAP = "Iqaluit.xls"
-CENTERS_NUM = 30
+CENTERS_NUM = 55
 MAX_ITERATION = 100
 
 
@@ -20,7 +22,7 @@ class k_means:
         # self.dist_matrix = dist_matrix
         self.center_lst = center_lst
         self.k = k
-        self.groups = [[] for i in range(self.k)]
+        self.groups = [[] for _ in range(self.k)]
 
     def grouping(self):
         self.clear_group()
@@ -33,9 +35,19 @@ class k_means:
                     min_dist = dist
                     nearest_center_index = j
             self.groups[nearest_center_index].append(building)
+        self.format_groups()
+
+    def format_groups(self):
+        for i in range(len(self.groups)):
+            if len(self.groups[i]) == 0:
+                self.center_lst[i] = None
+                print("Remove: " + str(i))
+                self.k -= 1
+        self.groups = [group for group in self.groups if len(group) != 0]
+        self.center_lst = [center for center in self.center_lst if not None]
 
     def clear_group(self):
-        self.groups = [[] for i in range(self.k)]
+        self.groups = [[] for _ in range(self.k)]
 
     def centers_mean(self):
         '''
@@ -76,38 +88,6 @@ class k_means:
         """
         centers_index = np.random.choice(len(building_lst), k, replace=False)
         center_lst = [building_lst[i] for i in centers_index]
-
-        # angular_lst = {}
-        # adjacency_list = {}
-        # for i in centers_index:
-        #     center = building_lst[i]
-        #     # center_lst[center] = center.get_longitude() / center.get_latitude()
-        #     # center_lst[center] = center.get_longitude() / center.get_latitude()
-        #     # angular = int(center.get_longitude() / center.get_latitude() * 50000)
-        #     # if angular not in angular_lst:
-        #     #     angular_lst[angular] = []
-        #     # angular_lst[angular].append(center)
-        #
-        #     if center not in adjacency_list:
-        #         adjacency_list[center] = []
-        #     for other_center in adjacency_list.keys():
-        #         if other_center == center:
-        #             continue
-        #         relative_distance = sqrt((other_center.get_x() - center.get_x())**2 + (other_center.get_y() - center.get_y())**2)
-        #         if relative_distance < 400:
-        #             adjacency_list[center].append(other_center)
-        #             adjacency_list[other_center].append(center)
-                # adjacency_list[center].append(relative_distance)
-
-        # Sort the center list by angular
-        # center_lst = sorted(center_lst.items(), key=lambda kv: (kv[1], kv[0]))
-        # center_lst = dict(sorted(center_lst.items(), key=lambda item: item[1]))
-        # center_lst = [i[0] for i in center_lst]
-        # print(angular_lst.values())
-
-        # return list(i[0] for i in angular_lst)
-        # return list(center_lst.keys())
-        # return adjacency_list
         return center_lst
 
 
@@ -130,13 +110,13 @@ def clustering(read_path, map, k=CENTERS_NUM, iteration=MAX_ITERATION):
 
     ## with find_nearest_centers()
     for iter in range(iteration):
-        print("iteration = ", iter)
+        # print("iteration = ", iter)
         clustering_kmeans.grouping()
         centers_mean = clustering_kmeans.centers_mean()
         center_new = clustering_kmeans.find_nearest_centers(centers_mean)
 
         if center_new == clustering_kmeans.center_lst:
-            print("converge at {}-th iteration".format(iter))
+            # print("converge at {}-th iteration".format(iter))
             clustering_kmeans.center_lst = center_new
             clustering_kmeans.grouping()
             break
@@ -145,10 +125,50 @@ def clustering(read_path, map, k=CENTERS_NUM, iteration=MAX_ITERATION):
     return clustering_kmeans
 
 
-if __name__ == "__main__":
-    clustering = clustering(READ_PATH, MAP)
-    groups = clustering.groups
-    centers = clustering.center_lst
+def get_cluster_wss(cluster, sum_squard_distances):
+    centers = cluster.center_lst
+    # print(centers)
+    groups = cluster.groups
+    sum_squard_distance = 0
+    for i in range(len(groups)):
+        center = centers[i]
+        for building in groups[i]:
+            # wss += sqrt((building.get_latitude() - center.get_latitude()) ** 2 + (building.get_longitude() - center.get_longitude()) ** 2)
+            sum_squard_distance += sqrt((building.get_y() - center.get_y()) ** 2 + (
+                        building.get_x() - center.get_x()) ** 2)
+    print(sum_squard_distance)
+    sum_squard_distances.append(sum_squard_distance)
 
-    for center in centers:
-        print(center)
+
+# def optimize_cluster_number():
+#     sum_squared_distances = []
+#     cluster_amount = range(1, 101)
+#     for i in cluster_amount:
+#         cluster = clustering(READ_PATH, MAP, i)
+#         get_cluster_wss(cluster, sum_squared_distances)
+#     print("Sum Squared Distances: ")
+#     print(sum_squared_distances)
+#
+#     kn = KneeLocator(cluster_amount, sum_squared_distances, curve='convex', direction='decreasing', interp_method='polynomial')
+#
+#     plt.xlabel("Number of Clusters K")
+#     plt.ylabel('Sum of Squared Distances')
+#     plt.plot(cluster_amount, sum_squared_distances, 'bx-')
+#     plt.vlines(kn.knee, plt.ylim()[0], plt.ylim()[1], linestyles='dashed')
+#     plt.show()
+#
+#     return kn.knee
+
+def get_cluster_number(read_path, map):
+    building_lst = cm.get_data(read_path, map)
+    # print(f"Total Building Numbers: {len(building_lst)}")
+    return [len(building_lst) // 6, len(building_lst) // 25, len(building_lst) // 80]
+
+
+if __name__ == "__main__":
+    # optimize_cluster_number()
+    print(get_cluster_number(READ_PATH, MAP))
+
+
+
+
