@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import random
 import common_modules as cm
@@ -10,8 +12,8 @@ import matplotlib.pyplot as plt
 READ_PATH = "geo coordinates"
 WRITE_PATH = "Clustering"
 # MAPS = os.listdir(READ_PATH)
-MAP = "Iqaluit.xls"
-CENTERS_NUM = 55
+MAP = "Grise_Fiord.xls"
+CENTERS_NUM = 5
 MAX_ITERATION = 100
 
 
@@ -162,12 +164,15 @@ def get_cluster_wss(cluster, sum_squard_distances):
 def get_cluster_number(read_path, map):
     building_lst = cm.get_data(read_path, map)
     # print(f"Total Building Numbers: {len(building_lst)}")
-    return [len(building_lst) // 6, len(building_lst) // 25, len(building_lst) // 80]
+    return [int(math.ceil(len(building_lst) / 6)), int(math.ceil(len(building_lst) / 25)), int(math.ceil(len(building_lst) / 80))]
 
 
 if __name__ == "__main__":
     # optimize_cluster_number()
-    print(get_cluster_number(READ_PATH, MAP))
+    clustering = clustering(READ_PATH, MAP, CENTERS_NUM, MAX_ITERATION)
+    lst = clustering.groups
+    for center in lst:
+        print(center)
 
 
 

@@ -11,14 +11,11 @@ import os
 from queue import *
 
 READ_PATH = "geo coordinates"
-PDF_PATH = "Clustering"
 WRITE_PATH = "Clustering"
-PDF_FILE = "Arctic_Bay_Building_No_2021_Wall.pdf"
-MAP_NAME = PDF_FILE.split("_Building")[0]
-MAP = MAP_NAME + ".xls"
-
-
-# CENTERS_NUM = 30
+PDF_PATH = "Clustering"
+# PDF_FILE = "Arctic_Bay_Building_No_2021_Wall.pdf"
+# MAP_NAME = PDF_FILE.split("_Building")[0]
+# MAP = MAP_NAME + ".xls"
 
 
 class Cluster:
@@ -93,32 +90,8 @@ def save_data(cluster_lst, workbook):
             worksheet.write(i + 1, j + 1, cluster_buildings[j].get_building_num())
 
 
-def is_similar(color, recent_colors):
-    """
-    This function is used to check if there are similar colors in the last 5 used colors.
-    :param color: New color in the list of RGB value.
-    :param recent_colors: The list of last 5 used colors.
-    :return: There are similar colors or not.
-    """
-
-    # To avoid picking too bright color
-    if color[0] > 0.99 or color[1] > 0.99 or color[2] > 0.99:
-        return True
-
-    # To avoid picking too dark color
-    if color[0] < 0.01 or color[1] < 0.01 or color[2] < 0.01:
-        return True
-
-    for recent_color in recent_colors:
-        diff = math.sqrt(
-            (recent_color[0] - color[0]) ** 2 + (recent_color[1] - color[1]) ** 2 + (recent_color[2] - color[2]) ** 2)
-        if diff < 0.7:
-            return True
-    return False
-
-
 def find_adjancency(clusters, clusters_amount):
-    print('Adjacency Cluster Number: ' + str(int(math.ceil(clusters_amount / 4.5))))
+    print('Adjacency Cluster Number: ' + str(min(int(math.ceil(clusters_amount / 4.5)), len(colors.COLORS))))
     adjancency_list = [[0 for _ in range(len(clusters))] for _ in range(len(clusters))]
     for i in range(len(clusters)):
         distances = {}
@@ -129,8 +102,10 @@ def find_adjancency(clusters, clusters_amount):
                     clusters[j].get_center().get_y() - clusters[i].get_center().get_y()) ** 2)
             distances[relative_distance] = j
         # print(sorted(distances))
-        for k in range(int(math.ceil(clusters_amount / 4.5))):
+        for k in range(min(int(math.ceil(clusters_amount / 4.5)), len(colors.COLORS))):
             # print(distances[sorted(distances)[k]])
+            if not distances:
+                break
             index = distances[sorted(distances)[k]]
             adjancency_list[i][index] = 1
 
@@ -140,7 +115,7 @@ def find_adjancency(clusters, clusters_amount):
 def dfs_coloring(currently_coloring, adjancencies_number):
     if currently_coloring >= len(clusters_lst):
         return
-    for color in range(1, adjancencies_number + 1):
+    for color in range(adjancencies_number + 1):
         if can_use(color, currently_coloring):
             picked_color[currently_coloring] = color
             break
@@ -155,47 +130,60 @@ def can_use(color, currently_coloring):
     return True
 
 
+def get_files(path):
+    files = os.listdir(path)
+    return files
+
+
 if __name__ == "__main__":
-    cluster_number = k_means.get_cluster_number(READ_PATH, MAP)
-    print(cluster_number)
+    files = get_files(PDF_PATH)
+    print(f"Total File: {len(files)}")
+    print(f"Files List: {files}")
+    for file in files:
+        print(f"\nCurrent File: {file}")
+        map_name = file.split("_Building")[0]
+        map = map_name + ".xls"
 
-    # Create different directories to store the data of different granularity
-    for k in cluster_number:
-        try:
-            shutil.copy(PDF_PATH + '/' + PDF_FILE, PDF_PATH + '/' + MAP_NAME + f'/k_{k}/')
-        except:
-            os.makedirs(PDF_PATH + '/' + MAP_NAME + '/' + f'k_{k}/')
-            shutil.copy(PDF_PATH + '/' + PDF_FILE, PDF_PATH + '/' + MAP_NAME + f'/k_{k}/')
+        cluster_number = k_means.get_cluster_number(READ_PATH, map)
+        print(cluster_number)
 
-        clusters_lst = get_clusters_kmeans(READ_PATH, MAP, k=k)
-        adjancencies = find_adjancency(clusters_lst, k)
+        # Create different directories to store the data of different granularity
+        for k_value in cluster_number:
+            try:
+                shutil.copy(PDF_PATH + '/' + file, PDF_PATH + '/' + map_name + f'/k_{k_value}/')
+            except:
+                os.makedirs(PDF_PATH + '/' + map_name + '/' + f'k_{k_value}/')
+                shutil.copy(PDF_PATH + '/' + file, PDF_PATH + '/' + map_name + f'/k_{k_value}/')
 
-        try:
-            os.remove(f'{PDF_PATH}/{MAP_NAME}/k_{k}/cluster_data.xlsx')
-        except:
-            pass
+            clusters_lst = get_clusters_kmeans(READ_PATH, map, k=k_value)
+            adjancencies = find_adjancency(clusters_lst, k_value)
 
-        workbook = xlsxwriter.Workbook(f'{PDF_PATH}/{MAP_NAME}/k_{k}/cluster_data.xlsx')
-        save_data(clusters_lst, workbook)
-        workbook.close()
+            try:
+                os.remove(f'{PDF_PATH}/{map_name}/k_{k_value}/cluster_data.xlsx')
+            except:
+                pass
 
-        print("Adjacency Matrix: ")
-        for i in range(len(adjancencies)):
-            print(adjancencies[i])
+            workbook = xlsxwriter.Workbook(f'{PDF_PATH}/{map_name}/k_{k_value}/cluster_data.xlsx')
+            save_data(clusters_lst, workbook)
+            workbook.close()
 
-        picked_color = [-1 for _ in range(len(clusters_lst))]
-        picked_color[0] = 1
-        dfs_coloring(1, len(adjancencies))
+            print("Adjacency Matrix: ")
+            for i in range(len(adjancencies)):
+                print(adjancencies[i])
 
-        print("\nPicked Color:")
-        print(picked_color)
+            picked_color = [-1 for _ in range(len(clusters_lst))]
+            picked_color[0] = 1
+            dfs_coloring(1, len(adjancencies))
 
-        # annotator = PdfAnnotator(PDF_PATH + '/' + PDF_NAME)
-        annotator = PdfAnnotator(f'{PDF_PATH}/{MAP_NAME}/k_{k}/{PDF_FILE}')
-        for i in range(len(picked_color)):
-            color = colors.COLORS[picked_color[i] % 7]
-            r, g, b = color[0] / 255, color[1] / 255, color[2] / 255
-            clusters_lst[i].coloring(annotator, (r, g, b, 1),
-                                     size=10)
-            print("Coloring cluster {} using color(r, g, b): {} {} {}".format(str(i), str(r), str(g), str(b)))
-            annotator.write(f"{WRITE_PATH}/{MAP_NAME}/k_{k}/{PDF_FILE}")
+            print("\nPicked Color:")
+            print(picked_color)
+
+            # annotator = PdfAnnotator(PDF_PATH + '/' + PDF_NAME)
+            annotator = PdfAnnotator(f'{PDF_PATH}/{map_name}/k_{k_value}/{file}')
+            for i in range(len(picked_color)):
+                color = colors.COLORS[picked_color[i] % 7]
+                r, g, b = color[0] / 255, color[1] / 255, color[2] / 255
+                clusters_lst[i].coloring(annotator, (r, g, b, 1),
+                                         size=10)
+                print("Coloring cluster {} using color(r, g, b): {} {} {}".format(str(i), str(r), str(g), str(b)))
+                annotator.write(f"{WRITE_PATH}/{map_name}/k_{k_value}/{file}")
