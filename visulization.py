@@ -60,7 +60,7 @@ def can_use(color, currently_coloring):
 
 
 if __name__ == "__main__":
-    files = io_operation.get_files(PDF_PATH)
+    files = io_operations.get_files(PDF_PATH)
     print(f"Total File: {len(files)}")
     print(f"Files List: {files}")
     for file in files:
@@ -99,7 +99,7 @@ if __name__ == "__main__":
             workbook = xlsxwriter.Workbook(
                 f"{PDF_PATH}/{map_name}/k_{k_value}/cluster_data.xlsx"
             )
-            io_operation.save_data(clusters_lst, workbook)
+            io_operations.save_data(clusters_lst, workbook)
             workbook.close()
 
             print("Adjacency Matrix: ")
