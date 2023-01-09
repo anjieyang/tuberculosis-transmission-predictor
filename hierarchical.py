@@ -1,6 +1,6 @@
 import numpy as np
 import math
-import io_operation as cm
+import io_operations as cm
 
 # hyper-parameters
 READ_PATH = "Geo_coordinates"

@@ -1,6 +1,6 @@
 import math
 import numpy as np
-import io_operation
+import io_operations
 from math import sqrt
 from building import Building
 

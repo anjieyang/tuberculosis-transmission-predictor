@@ -7,7 +7,7 @@ from pdf_annotate import PdfAnnotator
 from pdf_annotate import Location
 
 import colors
-import io_operation
+import io_operations
 import k_means
 from cluster import get_clusters_kmeans
 from cluster import find_adjacency
