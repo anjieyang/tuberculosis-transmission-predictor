@@ -52,8 +52,8 @@ def dfs_coloring(currently_coloring, adjancencies_number):
 def can_use(color, currently_coloring):
     for colored in range(currently_coloring):
         if (
-            adjancencies[colored][currently_coloring] == 1
-            or adjancencies[currently_coloring][colored] == 1
+            adjacencies[colored][currently_coloring] == 1
+            or adjacencies[currently_coloring][colored] == 1
         ):
             if picked_color[colored] == color:
                 return False
@@ -105,7 +105,7 @@ if __name__ == "__main__":
                 )
 
             clusters_lst = get_clusters_kmeans(READ_PATH, map, k=k_value)
-            adjancencies = find_adjacency(clusters_lst, k_value)
+            adjacencies = find_adjacency(clusters_lst, k_value)
 
             try:
                 os.remove(f"{PDF_PATH}/{map_name}/k_{k_value}/cluster_data.xlsx")
@@ -119,12 +119,12 @@ if __name__ == "__main__":
             workbook.close()
 
             print("Adjacency Matrix: ")
-            for i in range(len(adjancencies)):
-                print(adjancencies[i])
+            for i in range(len(adjacencies)):
+                print(adjacencies[i])
 
             picked_color = [-1 for _ in range(len(clusters_lst))]
             picked_color[0] = 1
-            dfs_coloring(1, len(adjancencies))
+            dfs_coloring(1, len(adjacencies))
 
             print("\nPicked Color:")
             print(picked_color)
