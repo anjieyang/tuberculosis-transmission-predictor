@@ -23,12 +23,12 @@ class Kmeans:
     def grouping(self):
         self.clear_group()
         for building in self.building_lst:
-            min_dist = io_operation.Building.get_euclidean_distance(
+            min_dist = io_operations.Building.get_euclidean_distance(
                 building, self.center_lst[0]
             )
             nearest_center_index = 0
             for j in range(self.k):
-                dist = io_operation.Building.get_euclidean_distance(
+                dist = io_operations.Building.get_euclidean_distance(
                     building, self.center_lst[j]
                 )
                 if dist <= min_dist:
@@ -89,7 +89,7 @@ class Kmeans:
 
 
 def get_clusters(read_path, picked_map, k=CENTERS_NUM, iteration=MAX_ITERATION):
-    building_lst = io_operation.get_data(read_path, picked_map)
+    building_lst = io_operations.get_data(read_path, picked_map)
     centers_new = Kmeans.init_centers(building_lst, k)
     clustering_kmeans = Kmeans(building_lst=building_lst, center_lst=centers_new, k=k)
 
@@ -123,7 +123,7 @@ def get_cluster_wss(clusters, sum_squared_distances):
 
 
 def get_cluster_number(read_path, map):
-    building_lst = io_operation.get_data(read_path, map)
+    building_lst = io_operations.get_data(read_path, map)
     return [
         int(math.ceil(len(building_lst) / 6)),
         int(math.ceil(len(building_lst) / 25)),
