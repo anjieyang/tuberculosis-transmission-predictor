@@ -39,14 +39,14 @@ def coloring(cluster, annotator, color, size):
         )  # black text
 
 
-def dfs_coloring(currently_coloring, adjancencies_number):
+def dfs_coloring(currently_coloring, adjacencies_number):
     if currently_coloring >= len(clusters_lst):
         return
-    for color in range(adjancencies_number + 1):
+    for color in range(adjacencies_number + 1):
         if can_use(color, currently_coloring):
             picked_color[currently_coloring] = color
             break
-    dfs_coloring(currently_coloring + 1, adjancencies_number)
+    dfs_coloring(currently_coloring + 1, adjacencies_number)
 
 
 def can_use(color, currently_coloring):
