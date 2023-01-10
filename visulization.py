@@ -12,6 +12,8 @@ import k_means
 from cluster import get_clusters_kmeans
 from cluster import find_adjacency
 from border import graham_scan
+from scale import get_scale_points
+from intersects import is_intersects
 
 READ_PATH = "geo_coordinates"
 WRITE_PATH = "output"
@@ -73,6 +75,25 @@ def draw_border(cluster, annotator, color):
         appearance=Appearance(fill=color, stroke_width=5),
     )
 
+    return hull
+
+
+def draw_scaled_border(cluster, annotator, color, scale_number):
+    buildings = []
+    for building in cluster.buildings_lst:
+        buildings.append((building.x, 3370 - building.y))
+    hull = graham_scan(buildings)
+    scaled_hull = get_scale_points(hull, scale_number)
+    print(f"Scaled_hull: {scaled_hull}")
+
+    annotator.add_annotation(
+        annotation_type="polyline",
+        location=Location(points=scaled_hull, page=0),
+        appearance=Appearance(fill=color, stroke_width=5),
+    )
+
+    return scaled_hull
+
 
 if __name__ == "__main__":
     files = io_operations.get_files(PDF_PATH)
@@ -107,17 +128,6 @@ if __name__ == "__main__":
             clusters_lst = get_clusters_kmeans(READ_PATH, map, k=k_value)
             adjacencies = find_adjacency(clusters_lst, k_value)
 
-            try:
-                os.remove(f"{PDF_PATH}/{map_name}/k_{k_value}/cluster_data.xlsx")
-            except:
-                pass
-
-            workbook = xlsxwriter.Workbook(
-                f"{PDF_PATH}/{map_name}/k_{k_value}/cluster_data.xlsx"
-            )
-            io_operations.save_data(clusters_lst, workbook)
-            workbook.close()
-
             print("Adjacency Matrix: ")
             for i in range(len(adjacencies)):
                 print(adjacencies[i])
@@ -130,14 +140,54 @@ if __name__ == "__main__":
             print(picked_color)
 
             annotator = PdfAnnotator(f"{PDF_PATH}/{map_name}/k_{k_value}/{file}")
+            scaled_hulls = {}
+            literally_adjacencies = {}
             for i in range(len(picked_color)):
+                current_cluster_id = clusters_lst[i].get_cluster_id()
+                print(f"Current Cluster ID: {current_cluster_id}")
+                literally_adjacencies[clusters_lst[i].get_cluster_id()] = []
                 color = colors.COLORS[picked_color[i] % 7]
                 r, g, b = color[0] / 255, color[1] / 255, color[2] / 255
                 coloring(clusters_lst[i], annotator, (r, g, b, 1), size=10)
-                draw_border(clusters_lst[i], annotator, (r, g, b, 1))
+
+                hull = draw_border(clusters_lst[i], annotator, (r, g, b, 1))
+                current_scaled_hull = draw_scaled_border(
+                    clusters_lst[i], annotator, (r, g, b, 1), scale_number=1.5
+                )
+
+                if scaled_hulls:
+                    for cluster_id, scaled_hull in scaled_hulls.items():
+                        if is_intersects(current_scaled_hull, scaled_hull):
+                            literally_adjacencies[cluster_id].append(
+                                clusters_lst[i].get_cluster_id()
+                            )
+                            literally_adjacencies[
+                                clusters_lst[i].get_cluster_id()
+                            ].append(cluster_id)
+
+                print("Literally Adjacency")
+                print(literally_adjacencies)
+
+                scaled_hulls[clusters_lst[i].get_cluster_id()] = current_scaled_hull
+
                 print(
                     "Coloring cluster {} using color(r, g, b): {} {} {}".format(
                         str(i), str(r), str(g), str(b)
                     )
                 )
                 annotator.write(f"{WRITE_PATH}/{map_name}/k_{k_value}/{file}")
+
+            print("Literally Adjacencies")
+            print(literally_adjacencies)
+
+            try:
+                os.remove(f"{PDF_PATH}/{map_name}/k_{k_value}/clusters_data.xlsx")
+            except:
+                pass
+
+            workbook = xlsxwriter.Workbook(
+                f"{PDF_PATH}/{map_name}/k_{k_value}/clusters_data.xlsx"
+            )
+            io_operations.save_clusters_data(clusters_lst, workbook)
+            io_operations.save_adjacencies_data(literally_adjacencies, workbook)
+            workbook.close()
