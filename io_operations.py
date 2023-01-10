@@ -44,16 +44,28 @@ def get_data(read_path, map_name):
     return building_lst
 
 
-def save_data(cluster_lst, workbook):
-    worksheet = workbook.add_worksheet()
-    worksheet.write(0, 0, "Cluster Number")
+def save_clusters_data(cluster_lst, workbook):
+    worksheet = workbook.add_worksheet("Clusters Data")
+    worksheet.write(0, 0, "Cluster ID")
     for i in range(len(cluster_lst)):
         cluster = cluster_lst[i]
         cluster_format = workbook.add_format({"bold": True})
-        worksheet.write(i + 1, 0, i + 1, cluster_format)
+        worksheet.write(i + 1, 0, i, cluster_format)
         cluster_buildings = cluster.buildings_lst
         for j in range(len(cluster_buildings)):
             worksheet.write(i + 1, j + 1, cluster_buildings[j].get_building_num())
+
+
+def save_adjacencies_data(adjacency_data, workbook):
+    worksheet = workbook.add_worksheet("Adjacencies Data")
+    worksheet.write(0, 0, "Cluster ID")
+    i = 0
+    for cluster_id, adjacencies in adjacency_data.items():
+        cluster_format = workbook.add_format({"bold": True})
+        worksheet.write(i + 1, 0, cluster_id, cluster_format)
+        for j in range(len(adjacencies)):
+            worksheet.write(i + 1, j + 1, adjacencies[j])
+        i += 1
 
 
 def get_files(path):
