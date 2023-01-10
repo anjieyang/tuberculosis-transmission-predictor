@@ -11,6 +11,7 @@ import io_operations
 import k_means
 from cluster import get_clusters_kmeans
 from cluster import find_adjacency
+from border import graham_scan
 
 READ_PATH = "geo_coordinates"
 WRITE_PATH = "output"
@@ -59,6 +60,20 @@ def can_use(color, currently_coloring):
     return True
 
 
+def draw_border(cluster, annotator, color):
+    buildings = []
+    for building in cluster.buildings_lst:
+        buildings.append((building.x, 3370 - building.y))
+    hull = graham_scan(buildings)
+    print(f"Hull: {hull}")
+
+    annotator.add_annotation(
+        annotation_type="polyline",
+        location=Location(points=hull, page=0),
+        appearance=Appearance(fill=color, stroke_width=5),
+    )
+
+
 if __name__ == "__main__":
     files = io_operations.get_files(PDF_PATH)
     print(f"Total File: {len(files)}")
@@ -84,6 +99,7 @@ if __name__ == "__main__":
                 )
             except:
                 os.makedirs(PDF_PATH + "/" + map_name + "/" + f"k_{k_value}/")
+                print("create dir")
                 shutil.copy(
                     PDF_PATH + "/" + file, PDF_PATH + "/" + map_name + f"/k_{k_value}/"
                 )
@@ -118,6 +134,7 @@ if __name__ == "__main__":
                 color = colors.COLORS[picked_color[i] % 7]
                 r, g, b = color[0] / 255, color[1] / 255, color[2] / 255
                 coloring(clusters_lst[i], annotator, (r, g, b, 1), size=10)
+                draw_border(clusters_lst[i], annotator, (r, g, b, 1))
                 print(
                     "Coloring cluster {} using color(r, g, b): {} {} {}".format(
                         str(i), str(r), str(g), str(b)
