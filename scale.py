@@ -19,16 +19,14 @@ def get_scale_points(points, scale_number):
     return scaled_points
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     x = [randint(1, 30) for _ in range(10)]
     y = [randint(1, 30) for _ in range(10)]
     points = list(zip(x, y))
-    print(f'Points: {points}')
+    print(f"Points: {points}")
     hull = graham_scan(points)
-    print(f'Hull: {hull}')
+    print(f"Hull: {hull}")
 
-    # centroid_x, centroid_y = get_centroid(hull)
-    # print(centroid_x, centroid_y)
     centroid = get_centroid(hull)
     print(centroid)
     plt.scatter(centroid[0], centroid[1], marker="o", color="black")
@@ -39,7 +37,7 @@ if __name__ == '__main__':
 
     # Scaled polygon
     scaled_points = get_scale_points(hull, 2)
-    print(f'Scaled: {scaled_points}')
+    print(f"Scaled: {scaled_points}")
     scaled_x, scaled_y = zip(*scaled_points)
     plt.plot(scaled_x, scaled_y, "-o", color="red")
 
