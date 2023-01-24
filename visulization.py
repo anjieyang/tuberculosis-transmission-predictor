@@ -13,6 +13,7 @@ from cluster import get_clusters_kmeans
 from cluster import find_adjacency
 from border import graham_scan
 from scale import get_scale_points
+from scale import get_centroid
 from intersects import is_intersects
 
 READ_PATH = "geo_coordinates"
@@ -84,12 +85,20 @@ def draw_scaled_border(cluster, annotator, color, scale_number):
         buildings.append((building.x, 3370 - building.y))
     hull = graham_scan(buildings)
     scaled_hull = get_scale_points(hull, scale_number)
+    centroid = get_centroid(buildings)
     print(f"Scaled_hull: {scaled_hull}")
+    print(f'Centriod: {centroid}')
 
     annotator.add_annotation(
         annotation_type="polyline",
         location=Location(points=scaled_hull, page=0),
         appearance=Appearance(fill=color, stroke_width=5),
+    )
+
+    annotator.add_annotation(
+        annotation_type="circle",
+        location=Location(points=centroid, page=0),
+        appearance=Appearance(fill=color)
     )
 
     return scaled_hull
