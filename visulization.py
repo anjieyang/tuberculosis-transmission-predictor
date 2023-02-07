@@ -1,12 +1,10 @@
 import os
 import shutil
 
-import PyPDF2 as pypdf
 import xlsxwriter
 from pdf_annotate import Appearance
 from pdf_annotate import PdfAnnotator
 from pdf_annotate import Location
-from colour import Color
 
 import colors
 import io_operations
@@ -17,6 +15,8 @@ from border import graham_scan
 from scale import get_scale_points, get_centriod_by_cluster
 from scale import get_centroid
 from intersects import is_intersects
+
+from statistics import draw_degree_distribution
 
 READ_PATH = "geo_coordinates"
 WRITE_PATH = "output"
@@ -104,6 +104,8 @@ def draw_scaled_border(cluster, annotator, color, scale_number):
     )
 
     return scaled_hull
+
+
 
 
 if __name__ == "__main__":
@@ -198,6 +200,9 @@ if __name__ == "__main__":
 
             print("Literally Adjacencies")
             print(literally_adjacencies)
+
+            save_path = f"{PDF_PATH}/{map_name}/k_{k_value}/"
+            degree_distribution = draw_degree_distribution(literally_adjacencies, save_path)
 
             try:
                 os.remove(f"{PDF_PATH}/{map_name}/k_{k_value}/clusters_data.xlsx")

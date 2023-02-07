@@ -6,7 +6,7 @@ This is a project that is used for predicting tuberculosis using the K-Means app
 
 - [x] Graph visulization
 - [ ] Statistics of graph data:
-  - [ ] Degree distribution
+  - [x] Degree distribution
   - [ ] [Silhouette score](https://towardsdatascience.com/performance-metrics-in-machine-learning-part-3-clustering-d69550662dc6)
   - [ ] K-kore
   - [ ] Connectivity measures
