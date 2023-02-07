@@ -71,3 +71,9 @@ def find_adjacency(clusters, clusters_amount):
             adjacency_list[i][index] = 1
 
     return adjacency_list
+
+
+def get_cluster_buildings_by_id(cluster_id, clusters_lst):
+    for cluster in clusters_lst:
+        if cluster_id == cluster.cluster_id:
+            return cluster

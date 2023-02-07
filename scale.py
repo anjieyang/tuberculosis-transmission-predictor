@@ -1,3 +1,5 @@
+import math
+from math import sqrt
 from random import randint
 from matplotlib import pyplot as plt
 from border import graham_scan
@@ -9,13 +11,24 @@ def get_centroid(points):
     return sum(x_list) / len(points), sum(y_list) / len(points)
 
 
+def get_centriod_by_cluster(cluster):
+    buildings = []
+    for building in cluster.buildings_lst:
+        buildings.append((building.x, 3370 - building.y))
+    return get_centroid(buildings)
+
+
+def get_average_distance(centroid, points):
+    total_distance = 0
+    for point in points:
+        total_distance += sqrt((point[0] - centroid[0]) ** 2 + (point[1] - centroid[1]) ** 2)
+    return total_distance / len(points)
+
+
 def get_scale_points(points, scale_number):
     centroid = get_centroid(points)
-    scaled_points = []
-    for point in points:
-        scaled_x = centroid[0] + (point[0] - centroid[0]) * scale_number
-        scaled_y = centroid[1] + (point[1] - centroid[1]) * scale_number
-        scaled_points.append((scaled_x, scaled_y))
+    r = get_average_distance(centroid, points) * scale_number
+    scaled_points = [(math.cos(2 * math.pi / 100 * x) * r + centroid[0], math.sin(2 * math.pi / 100 * x) * r + centroid[1]) for x in range(0, 100 + 1)]
     return scaled_points
 
 

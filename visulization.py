@@ -1,18 +1,20 @@
 import os
 import shutil
 
+import PyPDF2 as pypdf
 import xlsxwriter
 from pdf_annotate import Appearance
 from pdf_annotate import PdfAnnotator
 from pdf_annotate import Location
+from colour import Color
 
 import colors
 import io_operations
 import k_means
-from cluster import get_clusters_kmeans
+from cluster import get_clusters_kmeans, get_cluster_buildings_by_id
 from cluster import find_adjacency
 from border import graham_scan
-from scale import get_scale_points
+from scale import get_scale_points, get_centriod_by_cluster
 from scale import get_centroid
 from intersects import is_intersects
 
@@ -70,11 +72,11 @@ def draw_border(cluster, annotator, color):
     hull = graham_scan(buildings)
     print(f"Hull: {hull}")
 
-    annotator.add_annotation(
-        annotation_type="polyline",
-        location=Location(points=hull, page=0),
-        appearance=Appearance(fill=color, stroke_width=5),
-    )
+    # annotator.add_annotation(
+    #     annotation_type="polyline",
+    #     location=Location(points=hull, page=0),
+    #     appearance=Appearance(fill=color, stroke_width=5),
+    # )
 
     return hull
 
@@ -89,16 +91,16 @@ def draw_scaled_border(cluster, annotator, color, scale_number):
     print(f"Scaled_hull: {scaled_hull}")
     print(f'Centriod: {centroid}')
 
-    annotator.add_annotation(
-        annotation_type="polyline",
-        location=Location(points=scaled_hull, page=0),
-        appearance=Appearance(fill=color, stroke_width=5),
-    )
+    # annotator.add_annotation(
+    #     annotation_type="polyline",
+    #     location=Location(points=scaled_hull, page=0),
+    #     appearance=Appearance(fill=color, stroke_width=5),
+    # )
 
     annotator.add_annotation(
-        annotation_type="circle",
-        location=Location(points=centroid, page=0),
-        appearance=Appearance(fill=color)
+        annotation_type="square",
+        location=Location(x1=centroid[0]-10, y1=centroid[1]-10, x2=centroid[0]+10, y2=centroid[1]+10, page=0),
+        appearance=Appearance(fill=(0, 0, 0), stroke_width=1),
     )
 
     return scaled_hull
@@ -161,7 +163,7 @@ if __name__ == "__main__":
 
                 hull = draw_border(clusters_lst[i], annotator, (r, g, b, 1))
                 current_scaled_hull = draw_scaled_border(
-                    clusters_lst[i], annotator, (r, g, b, 1), scale_number=1.5
+                    clusters_lst[i], annotator, (r, g, b, 1), scale_number=1.8
                 )
 
                 if scaled_hulls:
@@ -173,6 +175,14 @@ if __name__ == "__main__":
                             literally_adjacencies[
                                 clusters_lst[i].get_cluster_id()
                             ].append(cluster_id)
+
+                            centroid1 = get_centriod_by_cluster(clusters_lst[i])
+                            centroid2 = get_centriod_by_cluster(get_cluster_buildings_by_id(cluster_id, clusters_lst))
+                            annotator.add_annotation(
+                                annotation_type="line",
+                                location=Location(points=(centroid1, centroid2), page=0),
+                                appearance=Appearance(fill=(0, 0, 0), stroke_width=3),
+                            )
 
                 print("Literally Adjacency")
                 print(literally_adjacencies)
