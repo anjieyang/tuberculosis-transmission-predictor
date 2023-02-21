@@ -47,7 +47,7 @@ class a_cluster:
         return np.mean(dist)
 
 
-class hierarchical_cluster:
+class HierarchicalCluster:
     def __init__(self, clusters_lst, k):
         """
         :param clusters_lst: a list of clusters(each one is a_cluster type)
@@ -116,7 +116,7 @@ class hierarchical_cluster:
 
 def clustering(read_path, map, k=CENTERS_NUM, iteration=MAX_ITERATION):
     building_lst = cm.get_data(read_path, map)
-    clustering_hierarchical = hierarchical_cluster(clusters_lst=[], k=k)
+    clustering_hierarchical = HierarchicalCluster(clusters_lst=[], k=k)
     clustering_hierarchical.initialize(building_lst)
     while clustering_hierarchical.q > k:
         print("current num of clusters is:", clustering_hierarchical.q)

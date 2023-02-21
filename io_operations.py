@@ -6,12 +6,16 @@ from building import Building
 
 def get_data(read_path, map_name):
     """
-    Read all values of all buildings
-    :param read_path: The path of target file
-    :param map_name: The name of target file
-    :return: A list of buildings, each building belongs to Building class
-    """
+    Read an Excel file containing building data for a particular map.
+    Creates a Building object for each valid building, and adds it to a list of buildings.
 
+    Args:
+    read_path (str): The path to the directory containing the Excel file.
+    map_name (str): The name of the Excel file containing the building data.
+
+    Returns:
+    A list of Building objects, each containing information about a valid building.
+    """
     df = pd.read_excel(read_path + "/" + map_name)
     data_size = len(df)
     building_lst = []
@@ -45,6 +49,15 @@ def get_data(read_path, map_name):
 
 
 def save_clusters_data(cluster_lst, workbook):
+    """
+    Saves the building numbers of each cluster into an Excel workbook.
+
+    Args:
+    - cluster_lst (list of Cluster objects): A list of clusters.
+    - workbook (XlsxWriter Workbook object): The workbook object to write the clusters data.
+
+    Returns: None
+    """
     worksheet = workbook.add_worksheet("Clusters Data")
     worksheet.write(0, 0, "Cluster ID")
     for i in range(len(cluster_lst)):
@@ -57,24 +70,52 @@ def save_clusters_data(cluster_lst, workbook):
 
 
 def save_adjacencies_data(adjacency_data, workbook):
+    """
+    Writes adjacency data to a worksheet in a given workbook.
+
+    Args:
+        adjacency_data (dict): A dictionary containing adjacency data for each cluster.
+            The keys of the dictionary are cluster IDs, and the values are dictionaries
+            representing the cluster's adjacency list. The adjacency list is also a
+            dictionary, where the keys are the IDs of adjacent clusters and the values
+            are the weights of the edges between them.
+        workbook (Workbook): An instance of the openpyxl Workbook class where the
+            adjacency data will be written.
+
+    Returns:
+        None
+    """
     worksheet = workbook.add_worksheet("Adjacencies Data")
     worksheet.write(0, 0, "Cluster ID")
     i = 0
     for cluster_id, adjacencies in adjacency_data.items():
         cluster_format = workbook.add_format({"bold": True})
         worksheet.write(i + 1, 0, cluster_id, cluster_format)
+        adjacencies = list(adjacencies.keys())
         for j in range(len(adjacencies)):
             worksheet.write(i + 1, j + 1, adjacencies[j])
         i += 1
 
 
 def get_files(path):
+    """
+    Returns a list of files in the given directory path.
+
+    Args:
+        path (str): The path of the directory.
+
+    Returns:
+        List[str]: A list of filenames in the directory.
+
+    Raises:
+        OSError: If the directory does not exist or is inaccessible.
+    """
     files = os.listdir(path)
     return files
 
 
 # Testing
-READ_PATH = "geo_coordinates"
+READ_PATH = "data/geo_coordinates"
 MAP = "Arctic_Bay.xls"
 if __name__ == "__main__":
     building_list = get_data(READ_PATH, MAP)

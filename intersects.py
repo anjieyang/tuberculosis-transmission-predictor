@@ -5,6 +5,16 @@ from shapely.geometry import Polygon
 
 
 def is_intersects(poly1, poly2):
+    """
+    Determines if two polygons intersect.
+
+    Args:
+    poly1: A list of (x,y) tuples representing the vertices of the first polygon.
+    poly2: A list of (x,y) tuples representing the vertices of the second polygon.
+
+    Returns:
+    A boolean indicating whether or not the two polygons intersect.
+    """
     if len(poly1) < 4 or len(poly2) < 4:
         return False
     poly1 = Polygon(poly1)

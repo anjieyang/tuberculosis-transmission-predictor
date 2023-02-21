@@ -5,14 +5,30 @@ from math import sqrt
 from building import Building
 
 # hyper-parameters
-READ_PATH = "geo_coordinates"
+READ_PATH = "data/geo_coordinates"
 WRITE_PATH = "output"
 MAP = "Grise_Fiord.xls"
 CENTERS_NUM = 5
 MAX_ITERATION = 100
 
 
-class Kmeans:
+class KMeansCluster:
+    """
+    Class that performs the k-means clustering algorithm on a list of buildings.
+
+    Attributes:
+        building_lst (list): A list of Building objects to be clustered.
+        center_lst (list): A list of k centers used for the clustering algorithm.
+        k (int): The number of clusters to create.
+
+    Methods:
+        grouping(): Group the buildings based on their distance to the centers.
+        formatting(): Format the clusters and remove empty clusters.
+        clear_group(): Clear the groups.
+        get_centers_mean(): Compute the mean (longitude, latitude) of centers of each group.
+        find_nearest_centers(centers_mean): Find the nearest centers to each group based on the computed mean.
+        init_centers(building_list, k): Initialize the k centers randomly from the building_list.
+    """
     def __init__(self, building_lst, center_lst, k):
         self.building_lst = building_lst
         self.datasize = len(self.building_lst)
@@ -89,9 +105,24 @@ class Kmeans:
 
 
 def get_clusters(read_path, picked_map, k=CENTERS_NUM, iteration=MAX_ITERATION):
+    """
+    Clusters buildings from the given map file using K-Means clustering algorithm.
+
+    Args:
+    - read_path (str): The path to the directory containing the map file.
+    - picked_map (str): The name of the map file to cluster.
+    - k (int, optional): The number of clusters to form. Default is `CENTERS_NUM`.
+    - iteration (int, optional): The maximum number of iterations to perform. Default is `MAX_ITERATION`.
+
+    Returns:
+    - A KMeansCluster object representing the result of the clustering.
+
+    Raises:
+    - None.
+    """
     building_lst = io_operations.get_data(read_path, picked_map)
-    centers_new = Kmeans.init_centers(building_lst, k)
-    clustering_kmeans = Kmeans(building_lst=building_lst, center_lst=centers_new, k=k)
+    centers_new = KMeansCluster.init_centers(building_lst, k)
+    clustering_kmeans = KMeansCluster(building_lst=building_lst, center_lst=centers_new, k=k)
 
     for it in range(iteration):
         clustering_kmeans.grouping()
@@ -108,6 +139,16 @@ def get_clusters(read_path, picked_map, k=CENTERS_NUM, iteration=MAX_ITERATION):
 
 
 def get_cluster_wss(clusters, sum_squared_distances):
+    """
+    Compute the within-cluster sum of squares (WSS) and append it to the list of sum of squared distances.
+
+    Args:
+    clusters (KMeansCluster): an instance of the KMeansCluster class, contains building data for clustering
+    sum_squared_distances (list): a list of WSS
+
+    Returns:
+    None
+    """
     centers = clusters.center_lst
     groups = clusters.groups
     sum_squared_distance = 0
@@ -123,6 +164,16 @@ def get_cluster_wss(clusters, sum_squared_distances):
 
 
 def get_cluster_number(read_path, map):
+    """
+    Computes the recommended number of clusters for a given map based on the size of the building list.
+
+    Args:
+        read_path (str): Path to the directory where the map file is located.
+        map (str): Name of the map file.
+
+    Returns:
+        list: A list of integers that represents the recommended number of clusters for the given map.
+    """
     building_lst = io_operations.get_data(read_path, map)
     return [
         int(math.ceil(len(building_lst) / 6)),

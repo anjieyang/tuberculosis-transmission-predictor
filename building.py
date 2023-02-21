@@ -3,6 +3,34 @@ import numpy as np
 
 
 class Building:
+    """
+    A class to represent a building.
+
+    Attributes:
+        building_num (int): The building number.
+        x (float): The x coordinate of the building.
+        y (float): The y coordinate of the building.
+        longitude (float): The longitude of the building.
+        latitude (float): The latitude of the building.
+        prefix (str, optional): The prefix of the building ID.
+        suffix (str, optional): The suffix of the building ID.
+        from_range (bool, optional): Whether the building is from a range.
+        range (str, optional): The range of the building.
+        category (str, optional): The category of the building.
+
+    Methods:
+        __str__(): Returns a string representation of the building.
+        __sub__(point): Returns a new building with the x and y coordinates subtracted by the given point.
+        __add__(point): Returns a new building with the x and y coordinates added by the given point.
+        __mul__(value): Returns a new building with the x and y coordinates multiplied by the given value.
+        get_building_num(): Returns the building number.
+        get_euclidean_distance(point1, point2): Returns the Euclidean distance between two points.
+        xstr(s): Returns an empty string if s is None or "None", otherwise returns s.
+        get_longitude(): Returns the longitude of the building.
+        get_latitude(): Returns the latitude of the building.
+        get_x(): Returns the x coordinate of the building.
+        get_y(): Returns the y coordinate of the building.
+    """
     def __init__(
         self,
         building_num,
@@ -89,11 +117,17 @@ class Building:
 
 
 def get_building_distance_matrix(building_list):
-    '''
-    Returns a matrix containing the distance of two buildings
-    :param building_list: A list of buildings, each building belongs to the Building class
-    :return: A numpy matrix which contains the distance of two buildings
-    '''
+    """
+    Calculates the Euclidean distance between all pairs of buildings in a given list of buildings.
+
+    Parameters:
+        building_list (list): A list of Building objects representing buildings on a map.
+
+    Returns:
+        numpy.ndarray: A 2D numpy array of shape (n, n) where n is the number of buildings in building_list.
+                       The value at the i-th row and j-th column represents the Euclidean distance between the
+                       i-th and j-th buildings in the list.
+    """
     data_size = len(building_list)
     building_distance_matrix = np.zeros([data_size, data_size])
     for i in range(data_size):
