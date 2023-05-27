@@ -6,17 +6,16 @@ import xlsxwriter
 from shapely import Polygon
 
 from src.config.app_config import DIRECTIONS
-from src.old_version.border import polar_angle, dist, is_counter_clockwise
 
 
 class Utils:
     @staticmethod
     def get_border(points):
         p0 = min(points, key=lambda p: (p[1], p[0]))
-        points.sort(key=lambda p: (polar_angle(p, p0), dist(p, p0)))
+        points.sort(key=lambda p: (Utils.polar_angle(p, p0), Utils.dist(p, p0)))
         border = []
         for i in range(len(points)):
-            while len(border) >= 2 and not is_counter_clockwise(
+            while len(border) >= 2 and not Utils.is_counter_clockwise(
                     border[-2], border[-1], points[i]
             ):
                 border.pop()
