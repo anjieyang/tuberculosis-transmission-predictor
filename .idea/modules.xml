@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/TB project.iml" filepath="$PROJECT_DIR$/.idea/TB project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/TB-transmission-predictor.iml" filepath="$PROJECT_DIR$/.idea/TB-transmission-predictor.iml" />
     </modules>
   </component>
 </project>
