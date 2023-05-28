@@ -2,10 +2,7 @@ import random
 
 import numpy
 
-from src.config.app_config import PATH_RAW_MAPS, PATH_GEO_COORDINATES, K_MEANS, KAPPA, TAU, GAMMA
-from src.map.MapController import MapController
-from src.map.MapModel import MapModel
-from src.map.MapView import MapView
+from src.config.app_config import KAPPA, TAU, GAMMA
 from src.sir.Group import SIRGroup
 
 

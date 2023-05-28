@@ -2,7 +2,7 @@ import random
 
 import networkx as nx
 
-from Group import SIRGroup
+from src.sir.Group import SIRGroup
 
 
 class Generator:

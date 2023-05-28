@@ -1,8 +1,6 @@
 from tqdm import tqdm
 
-from src.config.app_config import PATH_RAW_MAPS, PATH_GEO_COORDINATES, PATH_OUTPUT, K_MEANS
-from src.map.MapModel import MapModel
-from src.map.MapView import MapView
+from src.config.app_config import PATH_RAW_MAPS, PATH_OUTPUT
 from src.utils.Utils import Utils
 
 
@@ -30,10 +28,3 @@ class MapController:
             map = maps[i]
             self.coloring_map_by_name(map.name)
 
-
-# if __name__ == '__main__':
-#     map_model = MapModel(PATH_RAW_MAPS, PATH_GEO_COORDINATES, K_MEANS, 10)
-#     map_view = MapView()
-#     map_controller = MapController(map_model, map_view)
-#
-#     map_controller.coloring_all_maps()

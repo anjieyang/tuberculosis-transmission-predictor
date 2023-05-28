@@ -2,13 +2,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from src.config.app_config import PATH_RAW_MAPS, PATH_GEO_COORDINATES, K_MEANS
-from src.map.MapController import MapController
-from src.map.MapModel import MapModel
-from src.map.MapView import MapView
-from src.sir.SIRModel import SIRModel
-from src.sir.SIRView import SIRView
-
 
 class SIRController:
     def __init__(self, model, view):

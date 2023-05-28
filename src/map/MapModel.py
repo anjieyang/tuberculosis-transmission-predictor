@@ -5,7 +5,7 @@ from tqdm import tqdm
 from src.building.BuildingModel import BuildingModel
 from src.cluster.ClusterController import ClusterController
 from src.cluster.ClusterModel import ClusterModel
-from src.config.app_config import PATH_RAW_MAPS, PATH_GEO_COORDINATES, CENTERS_NUM, MAX_ITERATION, K_MEANS
+from src.config.app_config import PATH_GEO_COORDINATES, CENTERS_NUM, MAX_ITERATION
 from src.map.Map import Map
 
 
