@@ -31,9 +31,9 @@ class MapController:
             self.coloring_map_by_name(map.name)
 
 
-if __name__ == '__main__':
-    map_model = MapModel(PATH_RAW_MAPS, PATH_GEO_COORDINATES, K_MEANS, 10)
-    map_view = MapView()
-    map_controller = MapController(map_model, map_view)
-
-    map_controller.coloring_all_maps()
+# if __name__ == '__main__':
+#     map_model = MapModel(PATH_RAW_MAPS, PATH_GEO_COORDINATES, K_MEANS, 10)
+#     map_view = MapView()
+#     map_controller = MapController(map_model, map_view)
+#
+#     map_controller.coloring_all_maps()

@@ -99,7 +99,7 @@ class Utils:
     def save_map(map, original_path, to_path):
         file_name = map.file_name
         map_name = map.name
-        k = len(map.clusters)
+        k = len(map.groups)
 
         new_path = f'{to_path}{map_name}/{k}/'
         try:
@@ -126,8 +126,8 @@ class Utils:
         # save cluster data
         worksheet = workbook.add_worksheet("Clusters Data")
         worksheet.write(0, 0, "Cluster ID")
-        for i in range(len(map.clusters)):
-            cluster = map.clusters[i]
+        for i in range(len(map.groups)):
+            cluster = map.groups[i]
             cluster_format = workbook.add_format({"bold": True})
             worksheet.write(i + 1, 0, i, cluster_format)
             for j in range(len(cluster.buildings)):

@@ -7,6 +7,10 @@ MAX_ITERATION = 100
 
 K_MEANS = 'k_means'
 
+KAPPA = 15
+TAU = 0.5
+GAMMA = 0.1
+
 COLORS = [
     (230, 25, 75),
     (60, 180, 75),

@@ -1,29 +1,42 @@
+import random
+
 import numpy
 
-from src.sir.Generator import Generator
+from src.config.app_config import PATH_RAW_MAPS, PATH_GEO_COORDINATES, K_MEANS, KAPPA, TAU, GAMMA
+from src.map.MapController import MapController
+from src.map.MapModel import MapModel
+from src.map.MapView import MapView
+from src.sir.Group import SIRGroup
 
 
 class SIRModel:
-    def __init__(self, groups, time_steps):
-        self.groups = groups
+    def __init__(self, map, time_steps):
+        self.sir_groups = []
+        self.num_groups = self._create_sir_groups(map)
         self.time_steps = time_steps
-        self.num_groups = len(groups)
-        self.S = [[0] * time_steps for _ in range(self.num_groups)]
-        self.I = [[0] * time_steps for _ in range(self.num_groups)]
-        self.R = [[0] * time_steps for _ in range(self.num_groups)]
-        self.S = numpy.array(self.S, dtype=numpy.float64)
-        self.I = numpy.array(self.I, dtype=numpy.float64)
-        self.R = numpy.array(self.R, dtype=numpy.float64)
-        self.parameter = [[0] * 3 for _ in range(self.num_groups)]
+        self.S = numpy.zeros((self.num_groups, time_steps), dtype=numpy.float64)
+        self.I = numpy.zeros((self.num_groups, time_steps), dtype=numpy.float64)
+        self.R = numpy.zeros((self.num_groups, time_steps), dtype=numpy.float64)
+        self.parameter = numpy.zeros((self.num_groups, 3), dtype=numpy.float64)
 
-        for group_id in range(self.num_groups):
-            self.S[group_id][0], self.I[group_id][0], self.R[group_id][0] = groups[group_id].susceptible, groups[
-                group_id].infected, groups[group_id].removed
-            self.parameter[group_id][0], self.parameter[group_id][1], self.parameter[group_id][2] = groups[
-                group_id].kappa, groups[group_id].tau, groups[group_id].gamma
+        for sir_group in self.sir_groups:
+            self.S[sir_group.id][0] = sir_group.susceptible
+            self.I[sir_group.id][0] = sir_group.infected
+            self.R[sir_group.id][0] = sir_group.removed
+            self.parameter[sir_group.id] = [sir_group.kappa, sir_group.tau, sir_group.gamma]
 
+    def _create_sir_groups(self, map):
+        for cluster in map.clusters:
+            id = cluster.id
+            population = cluster.size * 300
+            infected = 0
+            removed = 0
+            kappa = KAPPA
+            tau = TAU
+            gamma = GAMMA
+            contact = map.adjacency_matrix[cluster.id]
+            sir_group = SIRGroup(id, population, infected, removed, kappa, tau, gamma, contact)
+            self.sir_groups.append(sir_group)
+        random.choice(self.sir_groups).infected = 1
 
-if __name__ == '__main__':
-    groups = Generator.generate_sir_groups(5, 0)
-
-    sir = SIRModel(groups, 100)
+        return len(map.clusters)

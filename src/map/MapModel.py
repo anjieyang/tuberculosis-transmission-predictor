@@ -39,11 +39,11 @@ class MapModel:
         return map.adjacency_matrix
 
 
-if __name__ == '__main__':
-    map_model = MapModel(PATH_RAW_MAPS, PATH_GEO_COORDINATES, K_MEANS)
-    map = map_model.get_map_by_name('Arviat')
-    print(map.name)
-    print(len(map.buildings))
-    print(map.clusters)
-    adjacency_matrix = map_model.get_adjacency_by_name('Arviat')
-    print(adjacency_matrix)
+# if __name__ == '__main__':
+#     map_model = MapModel(PATH_RAW_MAPS, PATH_GEO_COORDINATES, K_MEANS)
+#     map = map_model.get_map_by_name('Arviat')
+#     print(map.name)
+#     print(len(map.buildings))
+#     print(map.clusters)
+#     adjacency_matrix = map_model.get_adjacency_by_name('Arviat')
+#     print(adjacency_matrix)

@@ -12,13 +12,12 @@ class SIRView:
     def show_view(self):
         # Load the Excel file
         xlsx = pd.ExcelFile(self.file_path + 'data.xlsx')
-        xlsx2 = pd.ExcelFile(self.file_path + 'contacts.xlsx')
 
         # Load the first sheet to get the column names
         df = pd.read_excel(xlsx, sheet_name=xlsx.sheet_names[0])
 
-        # Load the first sheet of the second Excel file to get the adjacency matrix
-        df2 = pd.read_excel(xlsx2, sheet_name=xlsx2.sheet_names[0])
+        # Load the fourth sheet of the second Excel file to get the adjacency matrix
+        df2 = pd.read_excel(xlsx, sheet_name=xlsx.sheet_names[3])
 
         # Initialize the Dash app
         app = dash.Dash(__name__)
@@ -33,7 +32,7 @@ class SIRView:
             ),
             dcc.Checklist(
                 id='sheet-checkbox',
-                options=[{'label': i, 'value': i} for i in xlsx.sheet_names],
+                options=[{'label': i, 'value': i} for i in xlsx.sheet_names if i != 'contacts'],
                 value=['S', 'I', 'R']
             ),
             dcc.Checklist(
@@ -194,8 +193,7 @@ class SIRView:
 
             return fig
 
-        app.run_server(debug=True)
-
+        app.run_server(debug=False)
 
 # Run the app
 if __name__ == '__main__':

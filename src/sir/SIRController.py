@@ -1,8 +1,11 @@
 import numpy as np
 import pandas as pd
-from tqdm import trange
+from tqdm import tqdm
 
-from src.sir.Generator import Generator
+from src.config.app_config import PATH_RAW_MAPS, PATH_GEO_COORDINATES, K_MEANS
+from src.map.MapController import MapController
+from src.map.MapModel import MapModel
+from src.map.MapView import MapView
 from src.sir.SIRModel import SIRModel
 from src.sir.SIRView import SIRView
 
@@ -13,11 +16,11 @@ class SIRController:
         self.view = view
 
     def simulate(self):
-        for t in trange(1, self.model.time_steps):
+        for t in tqdm(range(1, self.model.time_steps), total=self.model.time_steps, desc='Simulating'):
             # traverse the current group
-            for current in range(len(self.model.groups)):
+            for current in range(len(self.model.sir_groups)):
                 dS_current = 0
-                current_group = self.model.groups[current]
+                current_group = self.model.sir_groups[current]
 
                 # get the current b
                 kappa, tau, gamma = self.model.parameter[current]
@@ -44,17 +47,15 @@ class SIRController:
                 dS_current += dS_stay_current
 
                 # calculate the dS of the out people
-                for contact in range(current + 1, len(self.model.groups)):
-                    # check if they have contact
-                    if current_group.get_contacts_proportion(contact) == 0:
+                for contact in range(len(self.model.sir_groups)):
+                    if current_group.get_contacts_proportion(contact) == 0 or contact == current:
                         continue
 
-                    contact_group = self.model.groups[contact]
+                    contact_group = self.model.sir_groups[contact]
 
                     # get the initial
                     contact_S = self.model.S[current][t - 1]
                     contact_I = self.model.I[contact][t - 1]
-                    contact_R = self.model.R[contact][t - 1]
 
                     pr_S_current = current_S * current_group.get_contacts_proportion(contact)
                     pr_I_current = current_I * current_group.get_contacts_proportion(contact)
@@ -76,18 +77,9 @@ class SIRController:
                     dS_pr = dS_pr if dS_pr <= pr_S else pr_S
 
                     dS_pr_current = dS_pr * pr_N_current / pr_N
-                    dS_pr_contact = dS_pr * pr_N_contact / pr_N
 
                     # assign the value
                     dS_current += dS_pr_current
-
-                    contact_S -= dS_pr_contact
-                    contact_I += dS_pr_contact
-
-                    # update the value
-                    self.model.S[contact][t] = contact_S
-                    self.model.I[contact][t] = contact_I
-                    self.model.R[contact][t] = contact_R
 
                 # anomaly detection
                 dS_current = dS_current if dS_current <= current_S else current_S
@@ -116,18 +108,8 @@ class SIRController:
         df2 = pd.DataFrame(transposed_I)
         df3 = pd.DataFrame(transposed_R)
 
-        writer = pd.ExcelWriter('data.xlsx', engine='xlsxwriter')
-
-        # Write each DataFrame to a different worksheet
-        df1.to_excel(writer, sheet_name='S', index=False)
-        df2.to_excel(writer, sheet_name='I', index=False)
-        df3.to_excel(writer, sheet_name='R', index=False)
-
-        # Save the Excel file
-        writer.close()
-
         contacts_arrays = []
-        for group in self.model.groups:
+        for group in self.model.sir_groups:
             contacts_arrays.append(group.contacts)
 
         combined_array = np.vstack(contacts_arrays)
@@ -136,21 +118,17 @@ class SIRController:
 
         dftc = pd.DataFrame(transposed_combined)
 
-        writer = pd.ExcelWriter('contacts.xlsx', engine='xlsxwriter')
+        writer = pd.ExcelWriter('./sir/data.xlsx', engine='xlsxwriter')
 
-        dftc.to_excel(writer, sheet_name='data', index=False)
+        # Write each DataFrame to a different worksheet
+        df1.to_excel(writer, sheet_name='S', index=False)
+        df2.to_excel(writer, sheet_name='I', index=False)
+        df3.to_excel(writer, sheet_name='R', index=False)
+        dftc.to_excel(writer, sheet_name='contacts', index=False)
 
+        # Save the Excel file
         writer.close()
 
         print('Completed!')
 
         self.view.show_view()
-
-
-if __name__ == '__main__':
-    groups = Generator.generate_sir_groups(5, 0)
-    sir_model = SIRModel(groups, 100)
-    sir_view = SIRView('')
-    sir_controller = SIRController(sir_model, sir_view)
-
-    sir_controller.simulate()
