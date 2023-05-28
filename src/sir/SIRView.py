@@ -4,10 +4,12 @@ import plotly.graph_objects as go
 from dash import dash, dcc, html
 from dash.dependencies import Input, Output
 
+from src.config.app_config import PATH_SIR
+
 
 class SIRView:
-    def __init__(self, file_path):
-        self.file_path = file_path
+    def __init__(self):
+        self.file_path = PATH_SIR
 
     def show_view(self):
         # Load the Excel file

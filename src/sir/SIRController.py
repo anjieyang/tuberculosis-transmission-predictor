@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from src.config.app_config import PATH_SIR
+
 
 class SIRController:
     def __init__(self, model, view):
@@ -111,7 +113,7 @@ class SIRController:
 
         dftc = pd.DataFrame(transposed_combined)
 
-        writer = pd.ExcelWriter('./sir/data.xlsx', engine='xlsxwriter')
+        writer = pd.ExcelWriter(PATH_SIR + 'data.xlsx', engine='xlsxwriter')
 
         # Write each DataFrame to a different worksheet
         df1.to_excel(writer, sheet_name='S', index=False)

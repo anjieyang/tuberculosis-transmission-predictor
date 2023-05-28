@@ -13,7 +13,7 @@ if __name__ == '__main__':
     map = map_controller.get_map_by_name('Arctic_Bay')
 
     sir_model = SIRModel(map, 100)
-    sir_view = SIRView('./sir/')
+    sir_view = SIRView()
 
     sir_controller = SIRController(sir_model, sir_view)
     sir_controller.simulate()

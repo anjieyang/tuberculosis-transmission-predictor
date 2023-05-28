@@ -1,6 +1,7 @@
 PATH_GEO_COORDINATES = '../data/geo_coordinates/'
 PATH_RAW_MAPS = '../data/raw_maps/'
 PATH_OUTPUT = '../output/'
+PATH_SIR = './sir/'
 
 CENTERS_NUM = 5
 MAX_ITERATION = 100
