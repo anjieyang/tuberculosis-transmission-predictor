@@ -65,13 +65,17 @@ class SIRController:
                     pr_I = pr_I_current + pr_I_contact
                     pr_N = pr_N_current + pr_N_contact
 
-                    # calculate the dS of the partyroom people
-                    dS_pr = b * pr_S * pr_I / pr_N
+                    # # calculate the dS of the partyroom people
+                    # dS_pr = b * pr_S * pr_I / pr_N
+                    #
+                    # # the dS_partyroom should never exceed partyroom S
+                    # dS_pr = dS_pr if dS_pr <= pr_S else pr_S
 
-                    # the dS_partyroom should never exceed partyroom S
-                    dS_pr = dS_pr if dS_pr <= pr_S else pr_S
+                    # dS_pr_current = dS_pr * pr_N_current / pr_N
 
-                    dS_pr_current = dS_pr * pr_N_current / pr_N
+                    dS_pr_current = b * pr_I * pr_S_current / pr_N
+
+                    dS_pr_current = dS_pr_current if dS_pr_current <= pr_S_current else pr_S_current
 
                     # assign the value
                     dS_current += dS_pr_current
@@ -164,14 +168,23 @@ class SIRController:
                     contact_group = self.model.sir_groups[contact]
 
                     contact_I = self.model.I[contact][t - 1]
+                    contact_S = self.model.S[contact][t - 1]
 
                     out_S_current = current_S * current_group.get_contacts_proportion(contact)
-                    out_I_contact = contact_I * contact_group.get_contacts_proportion(current)
+                    out_I_current = current_I * current_group.get_contacts_proportion(contact)
+                    out_N_current = current_group.population * current_group.get_contacts_proportion(contact)
 
-                    dS_stay_current_by_out_contact = b * out_I_contact * current_S / current_group.population
+                    out_S_contact = contact_S * contact_group.get_contacts_proportion(current)
+                    out_I_contact = contact_I * contact_group.get_contacts_proportion(current)
+                    out_N_contact = contact_group.population * contact_group.get_contacts_proportion(current)
+
+                    stay_I_contact = contact_I * contact_group.get_contacts_proportion(contact)
+                    stay_N_contact = contact_group.population * contact_group.get_contacts_proportion(contact)
+
+                    dS_stay_current_by_out_contact = b * out_I_contact * stay_S_current / (stay_N_current + out_N_contact)
                     dS_stay_current_by_out_contact = dS_stay_current_by_out_contact if dS_stay_current_by_out_contact <= stay_S_current else stay_S_current
 
-                    dS_out_current_by_stay_contact = b * out_S_current * contact_I / contact_group.population
+                    dS_out_current_by_stay_contact = b * out_S_current * (stay_I_contact + out_I_current) / (stay_N_contact + out_N_current)
                     dS_out_current_by_stay_contact = dS_out_current_by_stay_contact if dS_out_current_by_stay_contact <= out_S_current else out_S_current
 
                     # assign the value
