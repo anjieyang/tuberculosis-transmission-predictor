@@ -25,7 +25,7 @@ class SIRModel:
     def _create_sir_groups(self, map):
         for cluster in map.clusters:
             id = cluster.id
-            population = cluster.size * 300
+            population = cluster.size * 5
             infected = 0
             removed = 0
             kappa = KAPPA

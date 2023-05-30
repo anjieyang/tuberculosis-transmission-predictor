@@ -16,4 +16,4 @@ if __name__ == '__main__':
     sir_view = SIRView()
 
     sir_controller = SIRController(sir_model, sir_view)
-    sir_controller.simulate()
+    sir_controller.show_view()

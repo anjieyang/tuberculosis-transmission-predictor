@@ -1,3 +1,5 @@
+import logging
+
 import networkx as nx
 import pandas as pd
 import plotly.graph_objects as go
@@ -10,16 +12,20 @@ from src.config.app_config import PATH_SIR
 class SIRView:
     def __init__(self):
         self.file_path = PATH_SIR
+        # Configure logging
+        log = logging.getLogger('werkzeug')
+        log.setLevel(logging.ERROR)
 
     def show_view(self):
         # Load the Excel file
         xlsx = pd.ExcelFile(self.file_path + 'data.xlsx')
+        xlsx2 = pd.ExcelFile(self.file_path + 'data2.xlsx')
 
         # Load the first sheet to get the column names
         df = pd.read_excel(xlsx, sheet_name=xlsx.sheet_names[0])
 
         # Load the fourth sheet of the second Excel file to get the adjacency matrix
-        df2 = pd.read_excel(xlsx, sheet_name=xlsx.sheet_names[3])
+        df_am = pd.read_excel(xlsx, sheet_name=xlsx.sheet_names[3])
 
         # Initialize the Dash app
         app = dash.Dash(__name__)
@@ -42,18 +48,19 @@ class SIRView:
                 options=[{'label': i, 'value': i} for i in ['Bar', 'Line']],
                 value=['Bar', 'Line']
             ),
-            dcc.Graph(id='graph'),
+            dcc.Graph(id='graph1'),
+            dcc.Graph(id='graph2'),
             dcc.Graph(id='network-graph')
         ])
 
         # Define the callback to update the graph when sheets or columns are selected
         @app.callback(
-            Output('graph', 'figure'),
+            Output('graph1', 'figure'),
             [Input('sheet-checkbox', 'value'),
              Input('column-dropdown', 'value'),
              Input('graph-type-checkbox', 'value')]
         )
-        def update_graph(selected_sheets, selected_columns, selected_graph_types):
+        def update_graph1(selected_sheets, selected_columns, selected_graph_types):
             # Create the figure
             fig = go.Figure()
 
@@ -113,6 +120,72 @@ class SIRView:
 
             return fig
 
+        @app.callback(
+            Output('graph2', 'figure'),
+            [Input('sheet-checkbox', 'value'),
+             Input('column-dropdown', 'value'),
+             Input('graph-type-checkbox', 'value')]
+        )
+        def update_graph2(selected_sheets, selected_columns, selected_graph_types):
+            # Create the figure
+            fig = go.Figure()
+
+            if selected_sheets is None or selected_columns is None or selected_graph_types is None:
+                return fig
+
+            # Loop over each selected sheet
+            for sheet in selected_sheets:
+                # Load the sheet into a data frame
+                df = pd.read_excel(xlsx2, sheet_name=sheet)
+
+                # Loop over each selected column
+                for column in selected_columns:
+                    # Check if the special "Sum" option was selected
+                    if column == 'Sum':
+                        # Calculate the sum across the selected columns for each row
+                        df_sum = df.sum(axis=1)
+
+                        if 'Bar' in selected_graph_types:
+                            # Add a bar chart of the sum to the figure
+                            fig.add_trace(go.Bar(
+                                x=df.index,
+                                y=df_sum,
+                                name=f'{sheet}-Sum'
+                            ))
+
+                        if 'Line' in selected_graph_types:
+                            # Calculate the difference between consecutive sums
+                            df_sum_diff = df_sum.diff()
+                            # Add a line chart of the differences to the figure
+                            fig.add_trace(go.Scatter(
+                                x=df.index,
+                                y=df_sum_diff,
+                                mode='lines',
+                                name=f'{sheet}-Sum change'
+                            ))
+
+                    else:
+                        if 'Bar' in selected_graph_types:
+                            # Add a bar chart of the column to the figure
+                            fig.add_trace(go.Bar(
+                                x=df.index,
+                                y=df[column],
+                                name=f'{sheet}-{column}'
+                            ))
+
+                        if 'Line' in selected_graph_types:
+                            # Calculate the difference between consecutive rows
+                            df_diff = df[column].diff()
+                            # Add a line chart of the differences to the figure
+                            fig.add_trace(go.Scatter(
+                                x=df.index,
+                                y=df_diff,
+                                mode='lines',
+                                name=f'{sheet}-{column} change'
+                            ))
+
+            return fig
+
         # Define a new callback to update the network graph
         @app.callback(
             Output('network-graph', 'figure'),
@@ -123,10 +196,11 @@ class SIRView:
             fig = go.Figure()
 
             # Create a graph from the DataFrame
-            G = nx.from_pandas_adjacency(df2)
+            G = nx.from_pandas_adjacency(df_am)
 
             # Compute positions for viz.
-            pos = nx.spring_layout(G)
+            # pos = nx.spring_layout(G, scale=20, k=30)
+            pos = nx.circular_layout(G)
 
             edge_trace = go.Scatter(
                 x=[],
@@ -141,7 +215,7 @@ class SIRView:
                 x1, y1 = pos[edge[1]]
                 edge_trace['x'] += tuple([x0, x1, None])
                 edge_trace['y'] += tuple([y0, y1, None])
-                contact_rate = df2.loc[edge[0], edge[1]]
+                contact_rate = df_am.loc[edge[0], edge[1]]
                 edge_trace['hovertext'] += tuple([f'Contact rate between {edge[0]} and {edge[1]}: {contact_rate}'])
 
             node_trace = go.Scatter(
@@ -200,5 +274,5 @@ class SIRView:
 
 # Run the app
 if __name__ == '__main__':
-    sir_view = SIRView('')
+    sir_view = SIRView()
     sir_view.show_view()
