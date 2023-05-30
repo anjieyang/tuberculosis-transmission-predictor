@@ -35,11 +35,9 @@ To run the program, use the `main.py` script.
 python main.py
 ```
 
-The script creates a subdirectory in the `output` directory for each location in the `data` directory, saves the cluster assignments to a .csv file in the corresponding location subdirectory, and generates a map visualization of the clustered data, which is also saved in the corresponding location subdirectory.
+Running this script will generate two .csv files with time-sequence data within the `sir` folder for each location specified in the `data` directory. These files record the state of the SIR model over time.
 
-## Contributing
-
-If you're interested in contributing to this project, please feel free to submit a pull request. You can also reach out to me at [digmouse233@gmail.com](mailto:digmouse233@gmail.com) if you have any questions or suggestions.
+A visualization of the model's progression can be accessed locally by running the Dash application, available at `http://127.0.0.1:8050` in your web browser after the script execution.
 
 ## License
 
